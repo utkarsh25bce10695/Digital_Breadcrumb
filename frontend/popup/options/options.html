@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PrivacyGuard Settings</title>
+    <link rel="stylesheet" href="options.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>🛡️ PrivacyGuard</h1>
+        <p class="subtitle">Privacy Settings</p>
+
+        <div class="setting-card">
+
+            <h2>Blocking Threshold</h2>
+
+            <p>
+                Cookies below this score will be blocked automatically.
+            </p>
+
+            <div class="slider-container">
+                <input 
+                    type="range" 
+                    id="threshold"
+                    min="0"
+                    max="100"
+                    value="40"
+                >
+
+                <span id="thresholdValue">40</span>
+            </div>
+
+        </div>
+
+
+        <div class="setting-card">
+
+            <h2>Always Allow Websites</h2>
+
+            <p>
+                Websites added here will not have cookies blocked.
+            </p>
+
+            <div class="website-input">
+
+                <input 
+                    type="text"
+                    id="websiteInput"
+                    placeholder="example.com"
+                >
+
+                <button id="addWebsite">
+                    Add
+                </button>
+
+            </div>
+
+            <ul id="websiteList"></ul>
+
+        </div>
+
+
+        <button id="saveButton" class="save-button">
+            Save Settings
+        </button>
+
+        <p id="saveMessage"></p>
+
+    </div>
+
+    <script src="options.js"></script>
+
+</body>
+</html>
