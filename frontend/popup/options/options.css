@@ -1,0 +1,148 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f7fb;
+    color: #222;
+}
+
+.container {
+    max-width: 650px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+h1 {
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    color: #777;
+    margin-top: 0;
+}
+
+.setting-card {
+    background: white;
+    padding: 22px;
+    margin-top: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.setting-card h2 {
+    margin-top: 0;
+    font-size: 18px;
+}
+
+.setting-card p {
+    color: #777;
+    font-size: 14px;
+}
+
+
+/* Blocking threshold */
+
+.slider-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+#threshold {
+    flex: 1;
+}
+
+#thresholdValue {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+
+/* Always allow websites */
+
+.website-input {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.website-input input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+
+/* Buttons */
+
+button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    background: #222;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+
+/* Website list */
+
+#websiteList {
+    padding-left: 0;
+    list-style: none;
+    margin-top: 15px;
+}
+
+
+/* Website whitelist item */
+
+.website-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f5f7fb;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+}
+
+
+/* Remove button */
+
+.website-item button {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.website-item button:hover {
+    opacity: 0.85;
+}
+
+
+/* Save button */
+
+.save-button {
+    width: 100%;
+    margin-top: 20px;
+    padding: 13px;
+    font-size: 15px;
+}
+
+
+/* Save message */
+
+#saveMessage {
+    text-align: center;
+    font-weight: bold;
+    min-height: 20px;
+}
