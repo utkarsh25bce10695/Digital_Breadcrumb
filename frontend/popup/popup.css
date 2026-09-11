@@ -1,0 +1,204 @@
+body {
+    width: 350px;
+    margin: 0;
+    padding: 18px;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    background: #f5f7fb;
+    color: #222;
+}
+
+/* Header */
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.logo {
+    font-size: 30px;
+}
+
+h1 {
+    margin: 0;
+    font-size: 21px;
+}
+
+.site {
+    margin: 3px 0 0;
+    font-size: 12px;
+    color: #777;
+}
+
+/* Score */
+
+.score-card {
+    background: white;
+    border-radius: 12px;
+    padding: 18px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.score-title {
+    margin: 0;
+    font-size: 13px;
+    color: #777;
+}
+
+.score {
+    font-size: 38px;
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+.score span {
+    font-size: 15px;
+    color: #888;
+}
+
+.score-status {
+    margin: 0;
+    font-size: 12px;
+}
+
+/* Statistics */
+
+.stats {
+    display: flex;
+    gap: 8px;
+    margin: 12px 0;
+}
+
+.stat-box {
+    flex: 1;
+    background: white;
+    padding: 10px 5px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.stat-label {
+    font-size: 11px;
+    color: #777;
+    margin-top: 3px;
+}
+
+/* Section */
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 15px 0 8px;
+}
+
+.section-header h2 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.section-header span {
+    font-size: 11px;
+    color: #777;
+}
+
+/* Cookie cards */
+
+.cookie-card {
+    background: white;
+    padding: 12px;
+    border-radius: 9px;
+    margin-bottom: 8px;
+}
+
+.cookie-top {
+    display: flex;
+    justify-content: space-between;
+}
+
+.cookie-card p {
+    margin: 5px 0 8px;
+    font-size: 11px;
+    color: #777;
+}
+
+.cookie-score {
+    font-weight: bold;
+}
+
+.cookie-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.category {
+    font-size: 10px;
+    color: #666;
+}
+
+.status {
+    font-size: 9px;
+    font-weight: bold;
+}
+
+.blocked {
+    color: #c0392b;
+}
+
+.allowed {
+    color: #27864a;
+}
+
+.risky {
+    color: #c0392b;
+}
+
+.safe {
+    color: #27864a;
+}
+
+/* Buttons */
+
+.buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    background: #222;
+    color: white;
+    font-weight: bold;
+}
+
+/* Current blocking threshold */
+
+.current-settings {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: #f5f7fb;
+    font-size: 13px;
+}
+
+.current-settings strong {
+    font-size: 15px;
+}
