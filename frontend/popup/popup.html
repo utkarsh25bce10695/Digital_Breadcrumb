@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PrivacyGuard</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+
+<body>
+
+    <div class="header">
+        <div class="logo">🛡️</div>
+
+        <div>
+            <h1>PrivacyGuard</h1>
+
+            <p class="site" id="currentWebsite">
+                example.com
+            </p>
+        </div>
+    </div>
+
+
+    <div class="score-card">
+
+        <p class="score-title">
+            Privacy Score
+        </p>
+
+        <div class="score">
+            <span id="websiteScore">78</span>
+            <span>/100</span>
+        </div>
+
+        <p class="score-status" id="scoreStatus">
+            Good Protection
+        </p>
+
+    </div>
+
+
+    <div class="stats">
+
+        <div class="stat-box">
+
+            <div
+                class="stat-number"
+                id="totalCookies"
+            >
+                12
+            </div>
+
+            <div class="stat-label">
+                Cookies
+            </div>
+
+        </div>
+
+
+        <div class="stat-box">
+
+            <div
+                class="stat-number"
+                id="blockedCookies"
+            >
+                4
+            </div>
+
+            <div class="stat-label">
+                Blocked
+            </div>
+
+        </div>
+
+
+        <div class="stat-box">
+
+            <div
+                class="stat-number"
+                id="allowedCookies"
+            >
+                8
+            </div>
+
+            <div class="stat-label">
+                Allowed
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="section-header">
+
+        <h2>Cookies</h2>
+
+        <span id="detectedCookies">
+            12 detected
+        </span>
+
+    </div>
+
+
+    <!-- TEMPORARY COOKIE CARDS -->
+    <!-- We will make these dynamic in the next step -->
+
+    <div class="cookie-card">
+
+        <div class="cookie-top">
+
+            <strong>_ga</strong>
+
+            <span class="cookie-score risky">
+                35
+            </span>
+
+        </div>
+
+        <p>Tracking cookie</p>
+
+        <div class="cookie-bottom">
+
+            <span class="category">
+                Tracking
+            </span>
+
+            <span class="status blocked">
+                BLOCKED
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="cookie-card">
+
+        <div class="cookie-top">
+
+            <strong>fbp</strong>
+
+            <span class="cookie-score risky">
+                28
+            </span>
+
+        </div>
+
+        <p>Advertising cookie</p>
+
+        <div class="cookie-bottom">
+
+            <span class="category">
+                Advertising
+            </span>
+
+            <span class="status blocked">
+                BLOCKED
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="cookie-card">
+
+        <div class="cookie-top">
+
+            <strong>session_id</strong>
+
+            <span class="cookie-score safe">
+                92
+            </span>
+
+        </div>
+
+        <p>Essential session cookie</p>
+
+        <div class="cookie-bottom">
+
+            <span class="category">
+                Functional
+            </span>
+
+            <span class="status allowed">
+                ALLOWED
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="buttons">
+
+        <button id="detailsButton">
+            View Details
+        </button>
+
+        <button id="settingsButton">
+            Settings
+        </button>
+
+    </div>
+
+
+    <!-- IMPORTANT: type="module" -->
+    <script
+        type="module"
+        src="popup.js">
+    </script>
+
+</body>
+</html>
