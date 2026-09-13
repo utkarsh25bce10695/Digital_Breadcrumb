@@ -1,13 +1,12 @@
 import { scanAndScoreSite } from "./scoringPipeline.js";
 
-// Re-scan a tab whenever it finishes loading a new page.
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.status !== "complete") {
         return;
     }
 
     if (!tab.url || !/^https?:\/\//.test(tab.url)) {
-        return; // skip chrome://, about:blank, extension pages, etc.
+        return;
     }
 
     scanAndScoreSite(tab.url).catch(err => {
@@ -15,8 +14,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     });
 });
 
-// Allow the popup (or any other extension page) to request a fresh
-// scan on demand, e.g. a "Rescan" button.
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message?.type !== "RESCAN_TAB") {
         return false;
@@ -41,5 +38,5 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         }
     })();
 
-    return true; // keep the message channel open for the async response
+    return true;
 });
