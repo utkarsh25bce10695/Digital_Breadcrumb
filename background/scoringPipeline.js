@@ -1,13 +1,9 @@
 import { adaptCookie } from "../scoring/cookieAdapter.js";
-import { scoreCookie } from "../scoring/cookieScorer.js";
-import { saveScan } from "./storage.js";
+import { scoreWebsite } from "../scoring/websiteScorer.js";
+import { getBlockingThreshold, saveWebsiteScan } from "./storage.js";
 
 let trackerDataCache = null;
 
-/**
- * Loads data/trackers.json once and caches it in memory for the
- * lifetime of the service worker.
- */
 async function loadTrackerData() {
     if (trackerDataCache) {
         return trackerDataCache;
@@ -17,19 +13,13 @@ async function loadTrackerData() {
     const response = await fetch(url);
 
     if (!response.ok) {
-        throw new Error(
-            `Failed to load trackers.json: ${response.status}`
-        );
+        throw new Error(`Failed to load trackers.json: ${response.status}`);
     }
 
     trackerDataCache = await response.json();
     return trackerDataCache;
 }
 
-/**
- * Extracts a bare domain (no protocol, no path) from a full URL,
- * e.g. "https://www.example.com/path" -> "www.example.com"
- */
 function extractDomain(url) {
     try {
         return new URL(url).hostname;
@@ -39,76 +29,63 @@ function extractDomain(url) {
 }
 
 /**
- * Runs the full detector -> scorer -> storage pipeline for one tab/site.
- *
- * @param {string} tabUrl - the URL of the tab being scanned
- * @returns {Promise<object|null>} the saved scan result, or null if the
- *   URL had no usable domain (e.g. chrome:// pages)
+ * Maps an adapted cookie's tracker/third-party flags to the category
+ * label dashboard.js expects. This is our own convention (not defined
+ * anywhere in the scorer), so adjust here if Nilesh/Yashi want a
+ * different taxonomy.
  */
-async function scanAndScoreSite(tabUrl) {
-    const websiteDomain = extractDomain(tabUrl);
-
-    if (!websiteDomain) {
-        return null;
+function categorize(adaptedCookie) {
+    if (adaptedCookie.isTracker) {
+        return "Tracking";
     }
-
-    // --- Detector step (Nilesh): pull raw cookies for this site ---
-    const rawCookies = await chrome.cookies.getAll({ domain: websiteDomain });
-
-    const trackerData = await loadTrackerData();
-
-    // --- Adapter + scorer step (Yashi): normalize, then score ---
-    const scoredCookies = rawCookies.map(rawCookie => {
-        const adapted = adaptCookie(rawCookie, websiteDomain, trackerData);
-        const result = scoreCookie(adapted);
-
-        return {
-            name: adapted.name,
-            isTracker: adapted.isTracker,
-            isThirdParty: adapted.isThirdParty,
-            score: result.score,
-            classification: result.classification,
-            reasons: result.reasons
-        };
-    });
-
-    const scanResult = buildScanResult(websiteDomain, scoredCookies);
-
-    // --- Storage step ---
-    await saveScan(websiteDomain, scanResult);
-
-    return scanResult;
+    if (adaptedCookie.isThirdParty) {
+        return "Advertising";
+    }
+    return "Functional";
 }
 
 /**
- * Aggregates individual cookie scores into one site-level result.
- * Overall score is the average of individual cookie scores (100 if
- * the site has no cookies at all).
+ * Full pipeline: raw cookies (detector) -> adaptCookie -> scoreWebsite
+ * (scorer) -> shaped records -> chrome.storage (in the schema
+ * dashboard.js/popup.js already read).
  */
-function buildScanResult(domain, scoredCookies) {
-    const overallScore = scoredCookies.length
-        ? Math.round(
-              scoredCookies.reduce((sum, c) => sum + c.score, 0) /
-                  scoredCookies.length
-          )
-        : 100;
+async function scanAndScoreSite(tabUrl) {
+    const website = extractDomain(tabUrl);
 
-    let overallClassification;
-    if (overallScore < 40) {
-        overallClassification = "HIGH RISK";
-    } else if (overallScore < 70) {
-        overallClassification = "MEDIUM RISK";
-    } else {
-        overallClassification = "LOW RISK";
+    if (!website) {
+        return null;
     }
 
-    return {
-        domain,
-        scannedAt: Date.now(),
-        overallScore,
-        overallClassification,
-        cookies: scoredCookies
-    };
+    const rawCookies = await chrome.cookies.getAll({ domain: website });
+    const trackerData = await loadTrackerData();
+
+    const adaptedCookies = rawCookies.map(rawCookie =>
+        adaptCookie(rawCookie, website, trackerData)
+    );
+
+    const result = scoreWebsite(website, adaptedCookies);
+    const threshold = await getBlockingThreshold();
+
+    // scoreWebsite's cookies array doesn't carry isTracker/isThirdParty
+    // through, so zip it back up against adaptedCookies (same order,
+    // same length) to build the category field.
+    const cookieRecords = result.cookies.map((scored, i) => {
+        const adapted = adaptedCookies[i];
+        const status = scored.score < threshold ? "blocked" : "allowed";
+
+        return {
+            name: scored.name,
+            score: scored.score,
+            category: categorize(adapted),
+            status,
+            description: `${categorize(adapted)} cookie`,
+            reason: scored.reasons.join(", ")
+        };
+    });
+
+    await saveWebsiteScan(website, result.websiteScore, cookieRecords);
+
+    return { website, websiteScore: result.websiteScore, cookies: cookieRecords };
 }
 
 export { scanAndScoreSite };
