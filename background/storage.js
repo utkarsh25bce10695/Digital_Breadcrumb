@@ -1,73 +1,60 @@
 /**
- * Thin promise wrapper around chrome.storage.local.
- * Keeps the storage schema in one place so other files don't
- * need to know the exact key format.
+ * Reads/writes the SAME chrome.storage.local schema that
+ * frontend/popup/dashboard/dashboard.js and popup.js already expect:
  *
- * Storage schema:
- *   "cookieScan:<domain>" -> {
- *       domain: string,
- *       scannedAt: number (ms epoch),
- *       overallScore: number,
- *       overallClassification: "LOW RISK" | "MEDIUM RISK" | "HIGH RISK",
- *       cookies: [
- *           { name, score, classification, reasons, isTracker, isThirdParty }
+ *   "cookies" -> {
+ *       "<website>": [
+ *           {
+ *               name: string,
+ *               score: number,
+ *               category: "Tracking" | "Advertising" | "Functional",
+ *               status: "blocked" | "allowed",
+ *               description: string,
+ *               reason: string
+ *           },
+ *           ...
  *       ]
  *   }
  *
- *   "scannedDomains" -> string[]   (index of every domain we have a scan for,
- *                                    so the popup can list history without
- *                                    scanning all of chrome.storage.local)
+ *   "websiteScores" -> {
+ *       "<website>": number   // overall website score, 0-100
+ *   }
+ *
+ *   "settings" -> { blockingThreshold: number }   // already read by popup.js,
+ *                                                   we only ever read this,
+ *                                                   never write it here.
  */
 
-const DOMAIN_INDEX_KEY = "scannedDomains";
-
-function scanKey(domain) {
-    return `cookieScan:${domain}`;
+async function getBlockingThreshold() {
+    const data = await chrome.storage.local.get(["settings"]);
+    const threshold =
+        data.settings && data.settings.blockingThreshold !== undefined
+            ? Number(data.settings.blockingThreshold)
+            : 40;
+    return threshold;
 }
 
-async function getScan(domain) {
-    const key = scanKey(domain);
-    const result = await chrome.storage.local.get(key);
-    return result[key] || null;
+/**
+ * Merges this website's cookie records and score into the shared
+ * "cookies" / "websiteScores" objects without clobbering other sites'
+ * entries already stored there.
+ */
+async function saveWebsiteScan(website, websiteScore, cookieRecords) {
+    const data = await chrome.storage.local.get([
+        "cookies",
+        "websiteScores"
+    ]);
+
+    const allCookies = data.cookies || {};
+    const allScores = data.websiteScores || {};
+
+    allCookies[website] = cookieRecords;
+    allScores[website] = websiteScore;
+
+    await chrome.storage.local.set({
+        cookies: allCookies,
+        websiteScores: allScores
+    });
 }
 
-async function saveScan(domain, scanResult) {
-    const key = scanKey(domain);
-    await chrome.storage.local.set({ [key]: scanResult });
-    await addToDomainIndex(domain);
-    return scanResult;
-}
-
-async function addToDomainIndex(domain) {
-    const result = await chrome.storage.local.get(DOMAIN_INDEX_KEY);
-    const domains = new Set(result[DOMAIN_INDEX_KEY] || []);
-
-    if (!domains.has(domain)) {
-        domains.add(domain);
-        await chrome.storage.local.set({
-            [DOMAIN_INDEX_KEY]: Array.from(domains)
-        });
-    }
-}
-
-async function getScannedDomains() {
-    const result = await chrome.storage.local.get(DOMAIN_INDEX_KEY);
-    return result[DOMAIN_INDEX_KEY] || [];
-}
-
-async function getAllScans() {
-    const domains = await getScannedDomains();
-
-    if (domains.length === 0) {
-        return [];
-    }
-
-    const keys = domains.map(scanKey);
-    const result = await chrome.storage.local.get(keys);
-
-    return domains
-        .map(domain => result[scanKey(domain)])
-        .filter(Boolean);
-}
-
-export { getScan, saveScan, getScannedDomains, getAllScans };
+export { getBlockingThreshold, saveWebsiteScan };
